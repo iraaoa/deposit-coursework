@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+
+<!-- Потрібен для fx:factory -->
+
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.DepositsController">
+    <!-- Кнопка назад -->
+    <Button fx:id="backButton" layoutX="29.0" layoutY="601.0" onAction="#OnDepoBackClick" prefHeight="38.0" prefWidth="94.0" text="Назад" />
+
+    <!-- Поле пошуку -->
+    <TextField fx:id="searchField" layoutX="29.0" layoutY="25.0" prefHeight="37.0" prefWidth="231.0" promptText="Пошук за банком/назвою..." />
+
+    <!-- Комбобокс сортування з елементами, заданими в FXML -->
+    <ComboBox fx:id="sortCriteriaComboBox" layoutX="303.0" layoutY="31.0" prefHeight="25.0" prefWidth="200.0" promptText="Сортувати за">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="Ставка (зрост.)" />
+                <String fx:value="Ставка (спад.)" />
+                <String fx:value="Термін (зрост.)" />
+                <String fx:value="Термін (спад.)" />
+                <String fx:value="Мін. сума (зрост.)" />
+                <String fx:value="Мін. сума (спад.)" />
+            </FXCollections>
+        </items>
+    </ComboBox>
+
+    <!-- Контейнер для блоків депозитів -->
+    <ScrollPane fx:id="depositScrollPane" fitToWidth="true" hbarPolicy="NEVER" layoutX="29.0" layoutY="80.0" prefHeight="451.0" prefWidth="942.0">
+        <content>
+            <FlowPane fx:id="depositFlowPane" hgap="15" prefHeight="0.0" prefWidth="941.0" style="-fx-padding: 10;" vgap="15" />
+        </content>
+    </ScrollPane>
+
+</AnchorPane>

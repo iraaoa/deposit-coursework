@@ -1,0 +1,90 @@
+/* Основний фон VBox */
+.vbox {
+    -fx-background-color: linear-gradient(to bottom right, #4a90e2, #145dbe);
+    -fx-padding: 20;
+    -fx-spacing: 15;
+    -fx-alignment: center;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0, 0, 2);
+}
+
+/* Заголовок */
+.label {
+    -fx-text-fill: #28a745;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0, 0, 1);
+}
+
+/* Текстові поля і комбобокси */
+.text-field, .combo-box {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-background-color: white;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1.5;
+    -fx-padding: 8 12;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: gray;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0, 0, 1);
+    -fx-transition: all 0.3s ease;
+}
+
+/* Наведення на текстові поля */
+.text-field:hover, .combo-box:hover {
+    -fx-border-color: #3a7bd5;
+    -fx-effect: dropshadow(gaussian, rgba(58,123,213,0.5), 5, 0, 0, 2);
+}
+
+/* Фокус на текстових полях */
+.text-field:focused, .combo-box:focused {
+    -fx-border-color: #285eac;
+    -fx-background-color: #f0f8ff;
+}
+
+
+/* CheckBox стиль */
+.check-box {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+/* Кнопки */
+.button {
+    -fx-background-color: #2c7be5;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 12;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0, 0, 1);
+    -fx-transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    -fx-background-color: #1a5fcc;
+}
+
+.button:pressed {
+    -fx-background-color: #144b8a;
+}
+
+/* Контейнер кнопок (HBox) */
+.hbox {
+    -fx-alignment: center;
+}
+
+/* Повідомлення */
+.label#messageLabel {
+    -fx-font-size: 14px;
+    -fx-text-fill: #ff6b6b;
+}
+
+#replenishableCheckBox {
+    -fx-text-fill: #28a745; /* зелений колір тексту */
+}
+
+#earlyWithdrawalCheckBox {
+    -fx-text-fill: #e74c3c; /* червоний колір тексту */
+}

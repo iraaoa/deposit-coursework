@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <!-- Console Appender -->
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%msg%n"/>
+        </Console>
+
+        <!-- File Appender -->
+        <File name="FileAppender" fileName="logs/app.log" append="true">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
+        </File>
+
+<!--        &lt;!&ndash; SMTP Appender &ndash;&gt;-->
+<!--        <SMTP name="EmailAppender" subject="Critical Error in Application"-->
+<!--              to="blumlabel@gmail.com" from="ironciks@gmail.com"-->
+<!--              smtpHost="smtp.gmail.com" smtpPort="465"-->
+<!--              smtpUsername="ironciks@gmail.com" smtpPassword="tvssqsnlhxbylbgk"-->
+<!--              smtpProtocol="smtps" smtpDebug="true">-->
+<!--            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>-->
+<!--            <Filters>-->
+<!--                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>-->
+<!--            </Filters>-->
+<!--        </SMTP>-->
+
+
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="FileAppender"/>
+<!--            <AppenderRef ref="EmailAppender"/>-->
+        </Root>
+    </Loggers>
+</Configuration>

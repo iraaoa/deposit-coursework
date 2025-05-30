@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" styleClass="auth-root-pane" xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.LoginController">
+    <children>
+        <!-- Form Container on the LEFT -->
+        <AnchorPane prefHeight="584.0" prefWidth="460.0" styleClass="form-container" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="58.0">
+            <children>
+                <VBox fx:id="formVBox" alignment="CENTER" styleClass="form-vbox" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="20.0">
+                    <children>
+                        <Label styleClass="form-title" text="Sign in" />
+
+                        <Label styleClass="form-label-fullwidth" text="Електронна пошта" />
+                        <TextField fx:id="emailField" promptText="example@email.com" styleClass="form-text-field-fullwidth" />
+
+                        <Label styleClass="form-label-fullwidth" text="Пароль" />
+                        <PasswordField fx:id="passwordField" promptText="Введіть ваш пароль" styleClass="form-text-field-fullwidth" />
+
+                        <Button fx:id="loginButton" onAction="#onLoginClick" styleClass="form-button-primary" text="Увійти" />
+
+                        <HBox alignment="CENTER" styleClass="login-prompt-hbox">
+                            <children>
+                                <Label styleClass="login-prompt-label" text="Немає акаунту?" />
+                                <Button fx:id="registerLinkButton" onAction="#onRegisterClick" styleClass="form-button-link" text="Зареєструватися" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </AnchorPane>
+
+        <!-- Logo Image on the RIGHT -->
+        <ImageView fx:id="logoImage" fitHeight="337.0" fitWidth="380.0" layoutX="660.0" layoutY="182.0" preserveRatio="true" styleClass="logo-image">
+        </ImageView>
+
+        <Label fx:id="errorLabel" alignment="CENTER" layoutX="696.0" layoutY="547.0" managed="${errorLabel.visible}" prefHeight="38.0" prefWidth="305.0" styleClass="error-label" text="Текст помилки тут" visible="false" wrapText="true" />
+
+    </children>
+</AnchorPane>

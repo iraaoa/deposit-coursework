@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.MyDepositsController">
+    <ScrollPane fx:id="depositScrollPane" fitToWidth="true" hbarPolicy="NEVER" layoutX="33.0" layoutY="38.0" prefHeight="554.0" prefWidth="952.0">
+        <content>
+            <FlowPane fx:id="depositFlowPane" hgap="15" prefWidth="960.0" style="-fx-padding: 10;" vgap="15" />
+        </content>
+    </ScrollPane>
+
+    <!-- Кнопка назад -->
+    <Button fx:id="backButton" layoutX="33.0" layoutY="623.0" onAction="#OnDepoBackClick" prefHeight="37.0" prefWidth="70.0" text="Назад" />
+</AnchorPane>

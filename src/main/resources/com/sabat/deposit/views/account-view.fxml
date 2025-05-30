@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="1100.0" spacing="20" styleClass="account-root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.AccountController">
+
+   <!-- Вітання з кнопкою Вихід справа -->
+   <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 20 40 0 40;">
+      <Label prefHeight="18.0" prefWidth="101.0" styleClass="greeting-label" text="Привіт," />
+      <Label fx:id="nameLabel" graphicTextGap="3.0" prefHeight="18.0" prefWidth="124.0" styleClass="greeting-label" text="" />
+
+      <!-- Spacer, який розтягується і штовхає кнопку вправо -->
+      <Region HBox.hgrow="ALWAYS" />
+
+      <Button contentDisplay="CENTER" mnemonicParsing="false" prefHeight="26.0" prefWidth="131.0" text="Вихід" onAction="#onLogoutClick" />
+   </HBox>
+
+   <!-- Зображення картки -->
+   <ImageView fx:id="cardImageView" fitHeight="225.0" fitWidth="381.0">
+      <VBox.margin>
+         <Insets bottom="1.0" />
+      </VBox.margin>
+   </ImageView>
+
+   <!-- Баланс -->
+   <HBox alignment="CENTER" prefHeight="30.0" prefWidth="1100.0" spacing="10.0">
+      <Label styleClass="greeting-label" text="Баланс:" />
+      <Label fx:id="balanceLabel" styleClass="balance-label" text="0 ₴" />
+      <VBox.margin>
+         <Insets top="1.0" />
+      </VBox.margin>
+   </HBox>
+
+   <!-- Кнопка поповнення -->
+   <Button fx:id="topUpButton" onAction="#onTopUpClick" prefHeight="38.0" prefWidth="230.0" styleClass="primary-button" text="Поповнити баланс" />
+
+   <!-- Нижнє меню -->
+   <HBox alignment="CENTER" prefHeight="122.0" prefWidth="1100.0" spacing="30.0" styleClass="footer-bar" VBox.vgrow="ALWAYS">
+      <Button onAction="#onDepositsClick" styleClass="primary-button" text="Вклади" />
+      <Button onAction="#onMyDepositsClick" styleClass="primary-button" text="Мої вклади" />
+      <Button onAction="#onHistoryClick" styleClass="primary-button" text="Історія" />
+
+      <VBox.margin>
+         <Insets top="130.0" />
+      </VBox.margin>
+   </HBox>
+</VBox>

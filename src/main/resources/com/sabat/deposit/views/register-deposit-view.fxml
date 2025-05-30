@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="346.0" prefWidth="404.0" spacing="15.0"
+      xmlns="http://javafx.com/javafx/23.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.sabat.deposit.controller.RegisterDepositController"
+      stylesheets="@../styles/register-deposit.css">
+
+
+    <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Реєстрація депозиту" />
+
+    <TextField fx:id="nameField" promptText="Назва депозиту" />
+    <ComboBox fx:id="typeComboBox" promptText="Тип депозиту">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="Універсальний" />
+                <String fx:value="Накопичувальний" />
+                <String fx:value="Ощадний" />
+            </FXCollections>
+        </items>
+    </ComboBox>
+
+    <TextField fx:id="interestRateField" promptText="Відсоткова ставка" />
+    <TextField fx:id="termField" promptText="Термін (місяців)" />
+    <TextField fx:id="bankNameField" promptText="Назва банку" />
+    <CheckBox fx:id="replenishableCheckBox" text="Можна поповнювати" />
+    <CheckBox fx:id="earlyWithdrawalCheckBox" text="Можна знімати раніше терміну" />
+    <TextField fx:id="minAmountField" promptText="Мінімальна сума" />
+
+    <HBox spacing="10">
+        <Button onAction="#onSaveClick" text="Зберегти" />
+        <Button onAction="#onCancelClick" text="Відміна" />
+    </HBox>
+
+    <Label fx:id="messageLabel" style="-fx-text-fill: red;" />
+   <padding>
+      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+   </padding>
+</VBox>

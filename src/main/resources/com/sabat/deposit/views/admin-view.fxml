@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="700.0" maxWidth="1100.0" minHeight="700.0" minWidth="1100.0" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.AdminController">
+    <children>
+        <Label prefHeight="106.0" prefWidth="464.0" style="-fx-font-size: 40px; -fx-font-weight: bold;" text="Панель Адміністратора" textAlignment="CENTER">
+            <font>
+                <Font size="53.0" />
+            </font>
+            <VBox.margin>
+                <Insets left="290.0" />
+            </VBox.margin>
+        </Label>
+
+        <TableView fx:id="depositsTable" prefHeight="358.0" prefWidth="1086.0">
+            <columns>
+                <TableColumn fx:id="idColumn" prefWidth="50" text="ID" />
+                <TableColumn fx:id="nameColumn" prefWidth="127.99999618530273" text="Назва" />
+                <TableColumn fx:id="typeColumn" prefWidth="126.40003967285156" text="Тип" />
+                <TableColumn fx:id="interestRateColumn" prefWidth="110.39996337890625" text="Cтавка (%)" />
+                <TableColumn fx:id="termColumn" prefWidth="118.39996337890625" text="Термін (міс)" />
+                <TableColumn fx:id="bankNameColumn" prefWidth="133.5999755859375" text="Банк" />
+                <TableColumn fx:id="isReplenishableColumn" prefWidth="120.0" text="Поповнення" />
+                <TableColumn fx:id="isEarlyWithdrawalColumn" minWidth="0.0" prefWidth="143.199951171875" text="Дострокове зняття" />
+                <TableColumn fx:id="minAmountColumn" prefWidth="187.2000732421875" text="Мінімальна сума" />
+            </columns>
+        </TableView>
+      <HBox prefHeight="34.0" prefWidth="662.0">
+         <children>
+              <Button onAction="#onDeleteDepositClick" prefHeight="34.0" prefWidth="247.0" text="Видалити вибраний депозит">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Button>
+      
+              <Button onAction="#onOpenRegisterDepositClick" prefHeight="34.0" prefWidth="262.0" text="Зареєструвати новий депозит">
+               <HBox.margin>
+                  <Insets left="78.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+
+
+
+    </children>
+</VBox>

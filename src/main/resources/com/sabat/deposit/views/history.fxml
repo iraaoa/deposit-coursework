@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="10" alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.HistoryController" prefWidth="600" prefHeight="400">
+
+    <TableView fx:id="historyTable" prefWidth="1100" prefHeight="700">
+        <columns>
+            <TableColumn fx:id="dateColumn" text="Дата" prefWidth="150" />
+            <TableColumn fx:id="typeColumn" text="Тип операції" prefWidth="200" />
+            <TableColumn fx:id="descriptionColumn" text="Опис" prefWidth="200" />
+            <TableColumn fx:id="amountColumn" text="Сума" prefWidth="200" />
+
+        </columns>
+    </TableView>
+
+    <Button text="Закрити" onAction="#onCloseClick" prefWidth="100" />
+
+    <VBox.margin>
+        <Insets top="10" />
+    </VBox.margin>
+</VBox>
