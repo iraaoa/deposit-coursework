@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+
 <AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.MyDepositsController">
-    <ScrollPane fx:id="depositScrollPane" fitToWidth="true" hbarPolicy="NEVER" layoutX="33.0" layoutY="38.0" prefHeight="554.0" prefWidth="952.0">
+    <ScrollPane fx:id="depositScrollPane" fitToWidth="true" hbarPolicy="NEVER" layoutX="29.0" layoutY="84.0" prefHeight="528.0" prefWidth="1070.0" styleClass="deposit-root" vbarPolicy="AS_NEEDED" AnchorPane.bottomAnchor="88.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="95.0">
         <content>
-            <FlowPane fx:id="depositFlowPane" hgap="15" prefWidth="960.0" style="-fx-padding: 10;" vgap="15" />
+            <FlowPane fx:id="depositFlowPane" hgap="15.0" prefWrapLength="750.0" style="-fx-padding: 10;" styleClass="deposit-container" vgap="15.0" />
         </content>
     </ScrollPane>
 
     <!-- Кнопка назад -->
-    <Button fx:id="backButton" layoutX="33.0" layoutY="623.0" onAction="#OnDepoBackClick" prefHeight="37.0" prefWidth="70.0" text="Назад" />
+    <Button fx:id="backButton" layoutX="33.0" layoutY="623.0" onAction="#OnDepoBackClick" prefHeight="37.0" prefWidth="70.0" styleClass="primary-button" text="Назад" />
+   <HBox alignment="CENTER" layoutY="26.0" prefHeight="18.0" prefWidth="1046.0">
+      <children>
+         <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="18.0" prefWidth="289.0" styleClass="d-name" text="Мої депозити" textAlignment="CENTER" />
+      </children>
+   </HBox>
 </AnchorPane>

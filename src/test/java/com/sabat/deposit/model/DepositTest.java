@@ -52,4 +52,50 @@ class DepositTest {
         assertEquals("Ні", deposit.getReplenishableString());
         assertEquals("Так", deposit.getEarlyWithdrawalString());
     }
+
+    @Test
+    void testSetName() {
+        Deposit deposit = new Deposit(1, "Initial Name", "Savings", 5.0, 12, "BankA", 1, 0, 1000.0);
+        deposit.setName("Updated Name");
+        assertEquals("Updated Name", deposit.getName());
+    }
+
+    @Test
+    void testSetType() {
+        Deposit deposit = new Deposit(1, "Initial Name", "Savings", 5.0, 12, "BankA", 1, 0, 1000.0);
+        deposit.setType("Checking");
+        assertEquals("Checking", deposit.getType());
+    }
+
+    @Test
+    void testSetInterestRate() {
+        Deposit deposit = new Deposit(1, "Initial Name", "Savings", 5.0, 12, "BankA", 1, 0, 1000.0);
+        deposit.setInterestRate(6.25);
+        assertEquals(6.25, deposit.getInterestRate());
+    }
+
+    @Test
+    void testSetTerm() {
+        Deposit deposit = new Deposit(1, "Initial Name", "Savings", 5.0, 12, "BankA", 1, 0, 1000.0);
+        deposit.setTerm(24);
+        assertEquals(24, deposit.getTerm());
+    }
+
+    @Test
+    void testReplenishableStringLogic() {
+        Deposit deposit1 = new Deposit(1, "Deposit A", "Type A", 1.0, 1, "Bank X", 1, 0, 100.0);
+        assertEquals("Так", deposit1.getReplenishableString());
+
+        Deposit deposit2 = new Deposit(2, "Deposit B", "Type B", 2.0, 2, "Bank Y", 0, 1, 200.0);
+        assertEquals("Ні", deposit2.getReplenishableString());
+    }
+
+    @Test
+    void testEarlyWithdrawalStringLogic() {
+        Deposit deposit1 = new Deposit(1, "Deposit A", "Type A", 1.0, 1, "Bank X", 0, 1, 100.0);
+        assertEquals("Так", deposit1.getEarlyWithdrawalString());
+
+        Deposit deposit2 = new Deposit(2, "Deposit B", "Type B", 2.0, 2, "Bank Y", 1, 0, 200.0);
+        assertEquals("Ні", deposit2.getEarlyWithdrawalString());
+    }
 }

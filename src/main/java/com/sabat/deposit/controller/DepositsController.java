@@ -5,6 +5,7 @@ import com.sabat.deposit.navigation.NavigationManager;
 import com.sabat.deposit.service.DepositService;
 import com.sabat.deposit.service.UserService;
 import com.sabat.deposit.session.Session;
+import com.sabat.deposit.util.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,16 +14,12 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DepositsController {
-
-    private static final Logger logger = LogManager.getLogger(DepositsController.class);
 
     @FXML
     FlowPane depositFlowPane;
@@ -40,10 +37,6 @@ public class DepositsController {
         this.depositService = service;
     }
 
-
-
-
-
     @FXML
     public void initialize() {
         if (depositService == null) {
@@ -54,20 +47,15 @@ public class DepositsController {
         updateDisplayedDeposits();
 
         searchField.textProperty().addListener((obs, oldVal, newVal) -> {
-            logger.info("Користувач ввів пошуковий запит: '{}'", newVal);
+            Logger.info("Користувач ввів пошуковий запит: '" + newVal + "'");
             updateDisplayedDeposits();
         });
 
         sortCriteriaComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            logger.info("Користувач обрав сортування: '{}'", newVal);
+            Logger.info("Користувач обрав сортування: '" + newVal + "'");
             updateDisplayedDeposits();
         });
     }
-
-
-
-
-
 
     void updateDisplayedDeposits() {
         String searchTerm = searchField.getText();
@@ -79,11 +67,6 @@ public class DepositsController {
 
         renderDeposits(processedList);
     }
-
-
-
-
-
 
     void renderDeposits(List<Deposit> deposits) {
         depositFlowPane.getChildren().clear();
@@ -99,13 +82,8 @@ public class DepositsController {
         }
     }
 
-
-
-
-
-
     private Node createDepositCard(Deposit deposit) {
-        VBox card = new VBox();
+        VBox card = new VBox(8); // Відступ між елементами
         card.getStyleClass().add("deposit-card");
 
         Label nameLabel = new Label(deposit.getName());
@@ -132,7 +110,8 @@ public class DepositsController {
         Label withdrawableLabel = new Label("Дострокове зняття: " + deposit.getEarlyWithdrawalString());
         withdrawableLabel.getStyleClass().add("card-info");
 
-        Button openButton = new Button("Відкрити депозит");
+        Button openButton = new Button("Відкрити");
+        openButton.getStyleClass().add("open-deposit-button");
         openButton.setOnAction(e -> handleOpenDepositAction(deposit));
 
         card.getChildren().addAll(
@@ -140,25 +119,20 @@ public class DepositsController {
                 minAmountLabel, replenishableLabel, withdrawableLabel,
                 openButton
         );
+
         return card;
     }
-
-
-
-
 
 
     void handleOpenDepositAction(Deposit deposit) {
         if (deposit == null) return;
 
         if (Session.getUser() == null) {
-            logger.warn("Користувач намагався відкрити депозит, не будучи авторизованим.");
             showAlert(Alert.AlertType.ERROR, "Помилка", "Користувач не авторизований. Будь ласка, увійдіть в систему.");
             return;
         }
 
-        logger.info("Користувач обрав депозит: '{}'", deposit.getName());
-
+        Logger.info("Користувач обрав депозит: '" + deposit.getName() + "'");
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Поповнення депозиту");
         dialog.setHeaderText("Введіть суму для поповнення депозиту:");
@@ -167,28 +141,23 @@ public class DepositsController {
         dialog.showAndWait().ifPresent(input -> {
             try {
                 double amount = Double.parseDouble(input.replace(',', '.'));
-                logger.info("Користувач вводить суму поповнення: {} грн для депозиту '{}'", amount, deposit.getName());
-
                 depositService.openDepositForUserWithAmount(Session.getUser().getId(), deposit, amount);
 
                 showAlert(Alert.AlertType.INFORMATION, "Успішно", "Депозит успішно відкрито та поповнено на " + String.format("%.2f", amount) + " грн.");
                 double updatedBalance = UserService.getBalanceByUserId(Session.getUser().getId());
                 Session.getUser().setBalance(updatedBalance);
 
-                logger.info("Депозит відкрито, новий баланс користувача: {} грн", updatedBalance);
+                Logger.info("Депозит відкрито, новий баланс користувача: " + updatedBalance + " грн");
 
             } catch (IllegalArgumentException e) {
-                logger.warn("Помилка валідації введеної суми: {}", e.getMessage());
+                Logger.error("Помилка валідації введеної суми: {}", e.getMessage());
                 showAlert(Alert.AlertType.WARNING, "Помилка валідації", e.getMessage());
             } catch (RuntimeException e) {
-                logger.error("Помилка при відкритті депозиту: {}", e.getMessage());
+                Logger.error("Помилка при відкритті депозиту: {}", e.getMessage());
                 showAlert(Alert.AlertType.ERROR, "Помилка", "Не вдалося відкрити депозит: " + e.getMessage());
             }
         });
     }
-
-
-
 
     protected void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
@@ -197,8 +166,6 @@ public class DepositsController {
         alert.setContentText(content);
         alert.showAndWait();
     }
-
-
 
     @FXML
     protected void OnDepoBackClick(ActionEvent event) throws IOException {

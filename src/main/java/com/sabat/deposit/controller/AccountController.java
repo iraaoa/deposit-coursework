@@ -13,70 +13,71 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.sabat.deposit.util.Logger;
 
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.Locale;
+
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
+import javafx.scene.layout.StackPane;
 
 public class AccountController {
 
-    private static final Logger logger = LogManager.getLogger(AccountController.class);
-
     @FXML private Label balanceLabel;
     @FXML private Label nameLabel;
-    @FXML
-    private ImageView cardImageView;
-
-
+    @FXML private Label cardNameLabel;
+    @FXML private StackPane cardPane;
+    @FXML private ImageView logoImage;
 
     @FXML
     public void initialize() {
-        logger.info("Ініціалізація AccountController.");
         User user = Session.getUser();
         if (user != null) {
             nameLabel.setText(user.getName());
-            balanceLabel.setText(String.format("%.2f грн", user.getBalance()));
-            logger.info("Дані користувача {} завантажено в AccountView.", user.getName());
+            NumberFormat nf = NumberFormat.getNumberInstance(new Locale("uk", "UA"));
+            nf.setMinimumFractionDigits(2);
+            nf.setMaximumFractionDigits(2);
+            String formattedBalance = nf.format(user.getBalance());
+            balanceLabel.setText("₴ " + formattedBalance);
+            String fullNameUpper = (user.getName() + " " + user.getSurname()).toUpperCase();
+            cardNameLabel.setText(fullNameUpper);
         } else {
-            logger.error("Користувача не знайдено в сесії під час ініціалізації AccountView.");
             showAlert("Помилка", "Користувача не знайдено. Будь ласка, увійдіть повторно.");
         }
 
-
-
-        try {
-            cardImageView.setImage(new Image(getClass().getResource("/com/sabat/deposit/images/card.png").toExternalForm()));
-            logger.debug("Зображення картки успішно завантажено.");
-        } catch (Exception e) {
-            logger.error("Не вдалося завантажити зображення картки: {}", e.getMessage(), e);
-        }
-
+        logoImage.setImage(new Image(getClass().getResource("/com/sabat/deposit/images/reg.png").toExternalForm()));
+        animateCardFadeIn();
     }
 
-
-
-
-
+    private void animateCardFadeIn() {
+        if (cardPane != null) {
+            cardPane.setOpacity(0);
+            FadeTransition fade = new FadeTransition(Duration.millis(2000), cardPane);
+            fade.setFromValue(0);
+            fade.setToValue(1);
+            fade.play();
+        }
+    }
 
     public void updateBalance() {
         User user = Session.getUser();
         if (user != null) {
-            balanceLabel.setText(String.format("%.2f грн", user.getBalance()));
-            logger.info("Баланс оновлено на AccountView: {} грн для користувача {}", user.getBalance(), user.getId());
+            NumberFormat nf = NumberFormat.getNumberInstance(new Locale("uk", "UA"));
+            nf.setMinimumFractionDigits(2);
+            nf.setMaximumFractionDigits(2);
+            String formattedBalance = nf.format(user.getBalance());
+            balanceLabel.setText("₴ " + formattedBalance);
         } else {
-            logger.warn("Спроба оновити баланс на AccountView без користувача в сесії.");
         }
     }
-
-
-
-
 
     @FXML
     protected void onTopUpClick(ActionEvent event) {
         User user = Session.getUser();
         String userId = (user != null) ? String.valueOf(user.getId()) : "невідомий";
-        logger.info("Користувач {} натиснув кнопку 'Поповнити'.", userId);
+        Logger.info("Користувач " + userId + " натиснув кнопку 'Поповнити'.");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/sabat/deposit/views/topup-view.fxml"));
             Parent topUpRoot = loader.load();
@@ -86,60 +87,39 @@ public class AccountController {
             Stage stage = new Stage();
             stage.setScene(topUpScene);
             stage.setTitle("Поповнення балансу");
-            logger.debug("Вікно поповнення балансу відкрито для користувача {}.", userId);
             stage.showAndWait();
         } catch (IOException e) {
-            logger.error("Помилка завантаження topup-view.fxml для користувача {}: {}", userId, e.getMessage(), e);
             showAlert("Помилка", "Не вдалося відкрити вікно поповнення.");
         }
     }
-
-
-
-
-
-
 
     @FXML
     public void onDepositsClick(ActionEvent event) {
         User user = Session.getUser();
         String userId = (user != null) ? String.valueOf(user.getId()) : "невідомий";
-        logger.info("Користувач {} натиснув кнопку 'Депозити', перехід до списку депозитів.", userId);
+        Logger.info("Користувач " + userId + " натиснув кнопку 'Депозити', перехід до списку депозитів.");
         try {
             NavigationManager.switchScene(event, "/com/sabat/deposit/views/deposits-view.fxml");
-            logger.debug("Успішно перейшли на deposits-view.fxml для користувача {}.", userId);
         } catch (IOException e) {
-            logger.error("Не вдалося відкрити deposits-view.fxml для користувача {}: {}", userId, e.getMessage(), e);
+            Logger.error("Не вдалося відкрити deposits-view.fxml для користувача " + userId + ": " + e.getMessage(), "");
             showAlert("Помилка", "Не вдалося відкрити сторінку депозитів.");
         }
     }
-
-
-
-
-
-
 
     @FXML
     protected void onMyDepositsClick(ActionEvent event) {
         User user = Session.getUser();
         String userId = (user != null) ? String.valueOf(user.getId()) : "невідомий";
-        logger.info("Користувач {} натиснув кнопку 'Мої депозити'.", userId);
+        Logger.info("Користувач " + userId + " натиснув кнопку 'Мої депозити'.");
         try {
             NavigationManager.switchScene(event, "/com/sabat/deposit/views/my-deposits-view.fxml");
-            logger.debug("Успішно перейшли на my-deposits-view.fxml для користувача {}.", userId);
         } catch (IOException e) {
-            logger.error("Помилка відкриття my-deposits-view.fxml для користувача {}: {}", userId, e.getMessage(), e);
+            Logger.error("Помилка відкриття my-deposits-view.fxml для користувача " + userId + ": " + e.getMessage(), "");
             showAlert("Помилка", "Не вдалося відкрити сторінку 'Мої депозити'.");
         }
     }
 
-
-
-
-
     private void showAlert(String title, String message) {
-        logger.warn("Показ сповіщення: Title='{}', Message='{}'", title, message);
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
@@ -147,15 +127,13 @@ public class AccountController {
         alert.showAndWait();
     }
 
-
     @FXML
     private void onHistoryClick(ActionEvent event) {
         User currentUser = Session.getUser();
         String userIdLog = (currentUser != null) ? String.valueOf(currentUser.getId()) : "невідомий";
-        logger.info("Користувач {} натиснув кнопку 'Історія'.", userIdLog);
+        Logger.info("Користувач " + userIdLog + " натиснув кнопку 'Історія'.");
 
         if (currentUser == null) {
-            logger.error("Неможливо відкрити історію: користувач не знайдений в сесії.");
             showAlert("Помилка", "Користувача не знайдено. Будь ласка, увійдіть повторно.");
             return;
         }
@@ -163,39 +141,29 @@ public class AccountController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/sabat/deposit/views/history.fxml"));
             Parent root = loader.load();
-            logger.debug("history.fxml завантажено успішно для користувача {}.", currentUser.getId());
 
             HistoryController controller = loader.getController();
             int currentUserId = currentUser.getId();
             controller.setUserId(currentUserId);
-            logger.debug("UserId {} встановлено для HistoryController.", currentUserId);
 
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.setTitle("Історія транзакцій");
             stage.show();
-            logger.info("Вікно історії транзакцій відкрито для користувача {}.", currentUserId);
         } catch (IOException e) {
-            logger.error("Помилка завантаження або відображення history.fxml для користувача {}: {}", currentUser.getId(), e.getMessage(), e);
             showAlert("Помилка", "Не вдалося відкрити історію транзакцій.");
         }
     }
-
-
-
 
     @FXML
     private void onLogoutClick(ActionEvent event) {
         User user = Session.getUser();
         String userId = (user != null) ? String.valueOf(user.getId()) : "невідомий";
-        logger.info("Користувач {} натиснув кнопку виходу.", userId);
         Session.clear();
-        logger.info("Сесію користувача {} очищено.", userId);
         try {
             NavigationManager.switchScene(event, "/com/sabat/deposit/views/login-view.fxml");
-            logger.info("Користувач {} успішно вийшов, перенаправлено на сторінку входу.", userId);
+            Logger.info("Користувач " + userId + " успішно вийшов, перенаправлено на сторінку входу.");
         } catch (IOException e) {
-            logger.error("Помилка перенаправлення на сторінку входу після виходу користувача {}: {}", userId, e.getMessage(), e);
             showAlert("Помилка", "Не вдалося повернутися на сторінку входу.");
         }
     }

@@ -1,9 +1,11 @@
 package com.sabat.deposit.controller;
 
 import com.sabat.deposit.model.Transaction;
+import com.sabat.deposit.navigation.NavigationManager;
 import com.sabat.deposit.service.TransactionService; // ВИПРАВЛЕНО: правильний сервіс
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -11,6 +13,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 // Імпорт для роботи з датою та форматуванням
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -42,7 +45,6 @@ public class HistoryController {
 
 
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("transactionDate"));
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
 
         if (descriptionColumn != null) {
             descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -88,6 +90,8 @@ public class HistoryController {
     private void onCloseClick() {
         Stage stage = (Stage) historyTable.getScene().getWindow();
         stage.close();
-        System.out.println("Кнопка 'Закрити' натиснута - реалізуйте дію.");
     }
+
+
+
 }

@@ -2,15 +2,12 @@ package com.sabat.deposit.service;
 
 import com.sabat.deposit.db.Database;
 import com.sabat.deposit.model.User;
+import com.sabat.deposit.util.Logger;
 import org.mindrot.jbcrypt.BCrypt;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 
 public class UserService {
-
-    private static final Logger logger = LogManager.getLogger(UserService.class);
 
     // Перевірка, чи існує користувач з таким email
     public static boolean userExists(String email) {
@@ -22,12 +19,11 @@ public class UserService {
             stmt.setString(1, email);
             try (ResultSet rs = stmt.executeQuery()) {
                 boolean exists = rs.next();
-                logger.info("Перевірка існування користувача з email '{}': {}", email, exists);
                 return exists;
             }
 
         } catch (SQLException e) {
-            logger.error("Помилка при перевірці існування користувача з email '{}': {}", email, e.getMessage(), e);
+            Logger.error("Помилка при перевірці існування користувача за email", e.getMessage());
             return false;
         }
     }
@@ -35,7 +31,7 @@ public class UserService {
     // Реєстрація нового користувача
     public static boolean registerUser(User user) {
         if (userExists(user.getEmail())) {
-            logger.warn("Спроба реєстрації користувача з існуючим email '{}'", user.getEmail());
+            Logger.info("Спроба реєстрації користувача з існуючим email '" + user.getEmail() + "'");
             return false;
         }
 
@@ -52,15 +48,14 @@ public class UserService {
 
             int rows = stmt.executeUpdate();
             if (rows > 0) {
-                logger.info("Користувач успішно зареєстрований: email='{}', name='{} {}'", user.getEmail(), user.getName(), user.getSurname());
                 return true;
             } else {
-                logger.warn("Не вдалося зареєструвати користувача з email '{}'", user.getEmail());
+                Logger.info("Не вдалося зареєструвати користувача з email '" + user.getEmail() + "'");
                 return false;
             }
 
         } catch (SQLException e) {
-            logger.error("Помилка при реєстрації користувача з email '{}': {}", user.getEmail(), e.getMessage(), e);
+            Logger.error("Помилка при реєстрації користувача з email '" + user.getEmail() + "'", e.getMessage());
             return false;
         }
     }
@@ -88,18 +83,17 @@ public class UserService {
                     user.setBalance(rs.getDouble("balance"));
                     user.setRole(rs.getString("role"));
 
-                    logger.info("Користувач успішно увійшов: email='{}', id={}", email, userId);
                     return user;
                 } else {
-                    logger.warn("Невдала спроба входу: невірний пароль для email '{}'", email);
+                    Logger.info("Невдала спроба входу: невірний пароль для email '" + email + "'");
                     return null;
                 }
             } else {
-                logger.warn("Невдала спроба входу: користувача з email '{}' не знайдено", email);
+                Logger.info("Невдала спроба входу: користувача з email '" + email + "' не знайдено");
                 return null;
             }
         } catch (SQLException e) {
-            logger.error("Помилка при вході користувача з email '{}': {}", email, e.getMessage(), e);
+            Logger.error("Помилка при вході користувача з email '" + email + "'", e.getMessage());
         }
 
         return null;
@@ -115,21 +109,21 @@ public class UserService {
 
             int rowsUpdated = stmt.executeUpdate();
             if (rowsUpdated > 0) {
-                logger.info("Баланс оновлено для користувача email='{}' на суму {}", user.getEmail(), user.getBalance());
+                Logger.info("Баланс оновлено для користувача email='" + user.getEmail() + "' на суму " + user.getBalance());
                 return true;
             } else {
-                logger.warn("Не вдалося оновити баланс користувача email='{}'", user.getEmail());
+                Logger.info("Не вдалося оновити баланс користувача email='" + user.getEmail() + "'");
                 return false;
             }
         } catch (SQLException e) {
-            logger.error("Помилка оновлення балансу для користувача email='{}': {}", user.getEmail(), e.getMessage(), e);
+            Logger.error("Помилка оновлення балансу для користувача email='" + user.getEmail() + "'", e.getMessage());
             return false;
         }
     }
 
     public static String topUpBalance(User user, String amountText) {
         if (amountText == null || amountText.trim().isEmpty()) {
-            logger.warn("Спроба поповнення балансу без вказаної суми для користувача email='{}'", user.getEmail());
+            Logger.info("Спроба поповнення балансу без вказаної суми для користувача email='" + user.getEmail() + "'");
             return "❌ Введіть суму для поповнення.";
         }
 
@@ -137,15 +131,15 @@ public class UserService {
         try {
             amount = Double.parseDouble(amountText.trim());
             if (amount <= 0) {
-                logger.warn("Невірна сума поповнення '{}' для користувача email='{}'", amountText, user.getEmail());
+                Logger.info("Невірна сума поповнення '" + amountText + "' для користувача email='" + user.getEmail() + "'");
                 return "❌ Сума повинна бути додатним числом.";
             }
             if ((user.getBalance() + amount) > 50000) {
-                logger.warn("Перевищено ліміт балансу при спробі поповнення на {} для користувача email='{}'", amount, user.getEmail());
+                Logger.info("Перевищено ліміт балансу при спробі поповнення на " + amount + " для користувача email='" + user.getEmail() + "'");
                 return "❌ Ви перевищили дозволений ліміт на балансі";
             }
         } catch (NumberFormatException e) {
-            logger.warn("Невірний формат суми для поповнення '{}', користувач email='{}'", amountText, user.getEmail());
+            Logger.info("Невірний формат суми для поповнення '" + amountText + "', користувач email='" + user.getEmail() + "'");
             return "❌ Сума повинна бути числом.";
         }
 
@@ -153,10 +147,12 @@ public class UserService {
         boolean success = updateUserBalance(user);
 
         if (success) {
-            logger.info("Баланс успішно поповнено на {} для користувача email='{}'", amount, user.getEmail());
+            Logger.info("Баланс успішно поповнено на " + amount + " для користувача email='" + user.getEmail() + "'");
+            Logger.info("Новий баланс: " + user.getBalance() + " для користувача email='" + user.getEmail() + "'");
+
             return "✅ Баланс успішно поповнено на " + amount;
         } else {
-            logger.error("Помилка при поповненні балансу на {} для користувача email='{}'", amount, user.getEmail());
+            Logger.error("Помилка при поповненні балансу на " + amount + " для користувача email='" + user.getEmail() + "'", "");
             return "❌ Сталася помилка при поповненні балансу.";
         }
     }
@@ -170,11 +166,10 @@ public class UserService {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 double balance = rs.getDouble("balance");
-                logger.info("Отримано баланс {} для користувача з id={}", balance, userId);
                 return balance;
             }
         } catch (SQLException e) {
-            logger.error("Помилка отримання балансу для користувача з id={}: {}", userId, e.getMessage(), e);
+            Logger.error("Помилка отримання балансу для користувача з id=" + userId, e.getMessage());
         }
         return 0.0;
     }
@@ -188,12 +183,11 @@ public class UserService {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 int id = rs.getInt("id");
-                logger.info("Отримано id={} для користувача з email='{}'", id, email);
                 return id;
             }
 
         } catch (SQLException e) {
-            logger.error("Помилка отримання id користувача за email='{}': {}", email, e.getMessage(), e);
+            Logger.error("Помилка отримання id користувача за email='" + email + "'", e.getMessage());
         }
 
         return -1;

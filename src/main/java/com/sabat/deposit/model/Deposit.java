@@ -72,4 +72,21 @@ public class Deposit {
     public String getEarlyWithdrawalString() {
         return isEarlyWithdrawal == 1 ? "Так" : "Ні";
     }
+
+    public void setName(String name) {
+        this.name = name;
+
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setInterestRate(double interestRate) {
+        this.interestRate = interestRate;
+    }
+
+    public void setTerm(int term) {
+        this.term=term;
+    }
 }

@@ -20,7 +20,7 @@
         <mockito.version>5.11.0</mockito.version>
         <testfx.version>4.0.16-alpha</testfx.version>
         <javafx.version>22.0.1</javafx.version>
-        <log4j.version>2.23.1</log4j.version>
+        <log4j.version>2.20.0</log4j.version>
         <slf4j.version>2.0.12</slf4j.version>
         <maven.compiler.version>3.13.0</maven.compiler.version>
     </properties>
@@ -123,21 +123,37 @@
         </dependency>
 
         <!-- Log4j2 та інтеграція зі SLF4J -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
+            <version>2.20.0</version>
+            <scope>compile</scope>
         </dependency>
+
+        <!-- Log4j2 API -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j2-impl</artifactId> <!-- SLF4J логування через Log4j2 -->
-            <version>${log4j.version}</version>
+            <artifactId>log4j-api</artifactId>
+            <version>2.20.0</version>
+            <scope>compile</scope>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>org.apache.logging.log4j</groupId>-->
+<!--            <artifactId>log4j-api</artifactId>-->
+<!--            <version>${log4j.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.logging.log4j</groupId>-->
+<!--            <artifactId>log4j-core</artifactId>-->
+<!--            <version>${log4j.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.logging.log4j</groupId>-->
+<!--            <artifactId>log4j-slf4j2-impl</artifactId> &lt;!&ndash; SLF4J логування через Log4j2 &ndash;&gt;-->
+<!--            <version>${log4j.version}</version>-->
+<!--        </dependency>-->
 
 
         <!-- Legacy javax.mail (needed for Log4j2 SMTPAppender) -->
@@ -219,6 +235,8 @@
                         --add-opens javafx.graphics/com.sun.javafx.tk=ALL-UNNAMED
                         --add-opens javafx.graphics/com.sun.javafx.embed=ALL-UNNAMED
                         --add-opens javafx.base/com.sun.javafx.beans=ALL-UNNAMED
+                        --add-opens org.apache.logging.log4j.core/org.apache.logging.log4j.core.net=ALL-UNNAMED
+
                     </argLine>
                 </configuration>
             </plugin>

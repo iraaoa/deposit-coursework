@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Button?>
-<?import javafx.geometry.Insets?>
 
-<VBox spacing="10" alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.HistoryController" prefWidth="600" prefHeight="400">
+<VBox alignment="TOP_CENTER" prefHeight="516.0" prefWidth="767.0" spacing="10" styleClass="a-root" stylesheets="@../styles/history.css" xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.HistoryController">
 
-    <TableView fx:id="historyTable" prefWidth="1100" prefHeight="700">
+    <TableView fx:id="historyTable" prefHeight="489.0" prefWidth="794.0" styleClass="a-table">
         <columns>
-            <TableColumn fx:id="dateColumn" text="Дата" prefWidth="150" />
-            <TableColumn fx:id="typeColumn" text="Тип операції" prefWidth="200" />
-            <TableColumn fx:id="descriptionColumn" text="Опис" prefWidth="200" />
-            <TableColumn fx:id="amountColumn" text="Сума" prefWidth="200" />
+            <TableColumn fx:id="dateColumn" prefWidth="139.99999618530273" text="Дата" />
+            <TableColumn fx:id="descriptionColumn" prefWidth="446.3999786376953" text="Опис" />
+            <TableColumn fx:id="amountColumn" prefWidth="119.2000732421875" text="Сума" />
 
         </columns>
     </TableView>
 
-    <Button text="Закрити" onAction="#onCloseClick" prefWidth="100" />
+    <Button onAction="#onCloseClick" prefWidth="100" styleClass="h-button" text="Закрити" />
 
     <VBox.margin>
         <Insets top="10" />

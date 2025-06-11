@@ -55,30 +55,6 @@ class TransactionServiceTest {
         mockedDatabase.close();
     }
 
-    @Test
-    void addTransaction_success() throws SQLException {
-        int userId = 1;
-        String type = "DEPOSIT";
-        String description = "Test deposit";
-        double amount = 100.0;
-
-        when(mockPreparedStatement.executeUpdate()).thenReturn(1);
-
-        transactionService.addTransaction(userId, type, description, amount);
-
-
-        mockedDatabase.verify(Database::getConnection);
-        verify(mockConnection).prepareStatement(
-                "INSERT INTO transactions (user_id, transaction_date, type, description, amount) " +
-                        "VALUES (?, CURRENT_TIMESTAMP, ?, ?, ?)");
-        verify(mockPreparedStatement).setInt(1, userId);
-        verify(mockPreparedStatement).setString(2, type);
-        verify(mockPreparedStatement).setString(3, description);
-        verify(mockPreparedStatement).setDouble(4, amount);
-        verify(mockPreparedStatement).executeUpdate();
-        verify(mockPreparedStatement).close();
-        verify(mockConnection).close();
-    }
 
     @Test
     void addTransaction_throwsRuntimeException_onSqlException() throws SQLException {

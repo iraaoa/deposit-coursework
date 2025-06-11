@@ -11,15 +11,16 @@
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
         </File>
 
-<!--        &lt;!&ndash; SMTP Appender &ndash;&gt;-->
-<!--        <SMTP name="EmailAppender" subject="Critical Error in Application"-->
-<!--              to="blumlabel@gmail.com" from="ironciks@gmail.com"-->
+        <!-- SMTP Appender -->
+<!--        <SMTP name="EmailAppender" -->
+<!--              subject="Critical Error in Application"-->
+<!--              to="ironciks@gmail.com" from="ironciks@gmail.com"-->
 <!--              smtpHost="smtp.gmail.com" smtpPort="465"-->
 <!--              smtpUsername="ironciks@gmail.com" smtpPassword="tvssqsnlhxbylbgk"-->
 <!--              smtpProtocol="smtps" smtpDebug="true">-->
 <!--            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>-->
 <!--            <Filters>-->
-<!--                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>-->
+<!--                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>-->
 <!--            </Filters>-->
 <!--        </SMTP>-->
 

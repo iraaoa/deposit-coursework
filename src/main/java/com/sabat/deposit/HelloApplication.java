@@ -1,5 +1,6 @@
 package com.sabat.deposit;
 
+import com.sabat.deposit.util.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -14,6 +15,7 @@ public class HelloApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 1100, 700);
 
         scene.getStylesheets().add(getClass().getResource("/com/sabat/deposit/style.css").toExternalForm());
+
 
         stage.setTitle("Вітаємо у Вкладах!");
         stage.setScene(scene);

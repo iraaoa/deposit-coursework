@@ -1,27 +1,24 @@
 package com.sabat.deposit.service;
-
-import com.sabat.deposit.controller.RegisterDepositController;
-import com.sabat.deposit.db.Database;
 import com.sabat.deposit.model.Deposit;
 import com.sabat.deposit.session.Session;
 
 import java.sql.*;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import com.sabat.deposit.util.Logger;
+
 import java.util.stream.Collectors;
 
-import org.apache.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
+import static com.sabat.deposit.db.Database.getConnection;
 
 public class DepositService {
-
-    private static final org.apache.log4j.Logger logger = LogManager.getLogger(DepositService.class);
-
 
     private final String dbUrl;
 
@@ -121,7 +118,7 @@ public class DepositService {
     public static boolean deleteDeposit(Deposit deposit) {
         String deleteSql = "DELETE FROM deposits WHERE id = ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(deleteSql)) {
 
             stmt.setInt(1, deposit.getId());
@@ -137,13 +134,10 @@ public class DepositService {
 
 
     public void openDepositForUserWithAmount(int userId, Deposit deposit, double amount) {
-        logger.info(String.format("Користувач %d намагається відкрити депозит '%s' на суму %.2f", userId, deposit.getName(), amount));
         if (amount < deposit.getMinAmount()) {
-            logger.warn(String.format("Користувач %d: сума %.2f менша за мінімально дозволену %.2f", userId, amount, deposit.getMinAmount()));
             throw new IllegalArgumentException("Сума менша за мінімально дозволену для цього депозиту.");
         }
         if (userHasDeposit(userId, deposit.getId())) {
-            logger.warn(String.format("Користувач %d вже має відкритий депозит ID %d", userId, deposit.getId()));
             throw new IllegalArgumentException("Ви вже відкрили цей депозит раніше.");
         }
 
@@ -152,33 +146,35 @@ public class DepositService {
 
             double currentBalance = getUserBalanceById(userId, conn);
             if (currentBalance < amount) {
-                logger.warn(String.format("Користувач %d: недостатньо коштів (потрібно %.2f, є %.2f)", userId, amount, currentBalance));
                 throw new IllegalArgumentException("Недостатньо коштів на балансі для відкриття депозиту.");
             }
 
             updateUserBalanceById(userId, currentBalance - amount, conn);
 
+            LocalDateTime startDate = LocalDateTime.now();
             LocalDateTime finishDate = LocalDateTime.now().plusMonths(deposit.getTerm());
             String formattedFinishDate = finishDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
             String insertQuery = "INSERT INTO user_deposits (user_id, deposit_id, opened_at, balance, last_interest_accrued, finish_date) " +
-                    "VALUES (?, ?, CURRENT_TIMESTAMP, ?, CURRENT_TIMESTAMP, ?)";
+                    "VALUES (?, ?, ?, ?, ?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(insertQuery)) {
                 pstmt.setInt(1, userId);
                 pstmt.setInt(2, deposit.getId());
-                pstmt.setDouble(3, amount);
-                pstmt.setString(4, formattedFinishDate);
+                pstmt.setString(3, formattedStartDate);
+                pstmt.setDouble(4, amount);
+                pstmt.setString(5, formattedStartDate);
+                pstmt.setString(6, formattedFinishDate);
                 pstmt.executeUpdate();
             }
 
             conn.commit();
-            logger.info(String.format("Користувач %d успішно відкрив депозит '%s' на суму %.2f", userId, deposit.getName(), amount));
+            Logger.info(String.format("Користувач %d успішно відкрив депозит '%s' на суму %.2f", userId, deposit.getName(), amount));
 
             String description = "Ви відкрили депозит: " + deposit.getName();
             transactionService.addTransaction(userId, "DEPOSIT_OPEN", description, amount);
 
         } catch (SQLException e) {
-            logger.error("Помилка бази даних при відкритті депозиту: " + e.getMessage(), e);
             throw new RuntimeException("Помилка бази даних при відкритті депозиту: " + e.getMessage(), e);
         }
     }
@@ -283,7 +279,6 @@ public class DepositService {
                     }
                     double userBalance = rs.getDouble("balance");
                     if (userBalance < amount) {
-                        logger.warn(String.format("Користувач %d має недостатньо коштів: %.2f, потрібно: %.2f", userId, userBalance, amount));
                         throw new IllegalArgumentException("Недостатньо коштів на балансі користувача.");
                     }
                 }
@@ -317,7 +312,7 @@ public class DepositService {
                     throw new RuntimeException("Депозит не знайдено для користувача.");
                 }
             }
-            logger.info(String.format("Користувач %d поповнив депозит '%s' на суму %.2f (бонус %.2f)", userId, deposit.getName(), amount, bonus));
+            Logger.info(String.format("Користувач %d поповнив депозит '%s' на суму %.2f (бонус %.2f)", userId, deposit.getName(), amount, bonus));
             conn.commit();
             String description = "Поповнення депозиту \"" + deposit.getName() + "\" на суму " + roundToTwoDecimals(totalDepositAmount);
             transactionService.addTransaction(userId, "DEPOSIT_TOP_UP", description, totalDepositAmount);
@@ -331,7 +326,6 @@ public class DepositService {
                 }
             }
 
-            logger.error("Помилка при поповненні депозиту: " + e.getMessage(), e);
             throw new RuntimeException("Помилка при поповненні депозиту: " + e.getMessage(), e);
         } finally {
             if (conn != null) {
@@ -350,7 +344,7 @@ public class DepositService {
         String sql = "INSERT INTO deposits (name, type, interest_rate, term, bank_name, is_replenishable, is_early_withdrawal, min_amount) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, deposit.getName());
@@ -376,7 +370,7 @@ public class DepositService {
 
     public void withdrawFromDeposit(int userId, Deposit deposit, double amount) {
         if (deposit.getIsEarlyWithdrawal() == 0) {
-            logger.warn(String.format("Користувач %d спробував дострокове зняття з депозиту '%s', але це заборонено", userId, deposit.getName()));
+            Logger.error(String.format("Користувач %d спробував дострокове зняття з депозиту '%s', але це заборонено", userId, deposit.getName()), "");
 
             throw new IllegalStateException("Дострокове зняття коштів з цього депозиту заборонено.");
         }
@@ -403,7 +397,7 @@ public class DepositService {
             }
 
             if (amount > currentBalance) {
-                logger.warn(String.format("Користувач %d намагається зняти %.2f, а на депозиті є лише %.2f", userId, amount, currentBalance));
+                Logger.info(String.format("Користувач %d намагається зняти %.2f, а на депозиті є лише %.2f", userId, amount, currentBalance));
 
                 throw new IllegalArgumentException("Недостатньо коштів на депозиті.");
             }
@@ -411,7 +405,6 @@ public class DepositService {
             double newBalance = currentBalance - amount;
 
             if (newBalance < 0) {
-                logger.warn(String.format("Користувач %d намагається зняти більше, ніж є на депозиті", userId));
 
                 throw new IllegalArgumentException("Неможливо зняти суму більшу за баланс.");
             }
@@ -455,22 +448,23 @@ public class DepositService {
                 updateUserBalanceStmt.setDouble(1, roundToTwoDecimals(newUserBalance));
                 updateUserBalanceStmt.setInt(2, userId);
                 updateUserBalanceStmt.executeUpdate();
-                logger.info("Оновлено баланс користувача після зняття з депозиту. Новий баланс: " + newUserBalance);
+                Logger.info("Оновлено баланс користувача після зняття з депозиту. Новий баланс: " + newUserBalance);
 
             }
 
             conn.commit();
-            logger.info(String.format("Користувач %d успішно зняв %.2f з депозиту '%s' (штраф %.2f), на баланс додано %.2f",
+            Logger.info(String.format("Користувач %d успішно зняв %.2f з депозиту '%s' (штраф %.2f), на баланс додано %.2f",
                     userId, amount, deposit.getName(), penalty, amountAfterPenalty));
 
             String description = "Дострокове зняття з депозиту \"" + deposit.getName() + "\" сума: " + roundToTwoDecimals(amount) + " (штраф: " + roundToTwoDecimals(penalty) + ")";
             transactionService.addTransaction(userId, "DEPOSIT_OPEN", description, amountAfterPenalty);
 
         } catch (SQLException e) {
-            logger.error("Помилка при знятті коштів з депозиту: " + e.getMessage(), e);
+            Logger.error("Помилка при знятті коштів з депозиту: " + e.getMessage(), "");
             throw new RuntimeException("Помилка при знятті коштів з депозиту: " + e.getMessage(), e);
         }
     }
+
 
 
     public void accrueInterest(int userId, Deposit deposit) {
@@ -485,35 +479,55 @@ public class DepositService {
              PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
 
             conn.setAutoCommit(false);
+            System.out.println("▶ Початок нарахування для користувача ID=" + userId + ", депозит ID=" + deposit.getId());
 
             selectStmt.setInt(1, userId);
             selectStmt.setInt(2, deposit.getId());
 
             try (ResultSet rs = selectStmt.executeQuery()) {
-                if (!rs.next()) return;
+                if (!rs.next()) {
+                    System.out.println("❗ Депозит не знайдено.");
+                    return;
+                }
 
                 double balance = rs.getDouble("balance");
                 String lastAccruedStr = rs.getString("last_interest_accrued");
                 Timestamp openedAt = rs.getTimestamp("opened_at");
 
+                System.out.println("✔ Дані депозиту: баланс = " + balance + ", останнє нарахування = " + lastAccruedStr + ", відкрито = " + openedAt);
+
                 LocalDateTime lastAccrued = LocalDateTime.parse(lastAccruedStr, formatter);
                 LocalDateTime now = LocalDateTime.now();
 
                 LocalDate openedDate = openedAt.toLocalDateTime().toLocalDate();
-                LocalDate nowDate = now.toLocalDate();
                 LocalDate endDate = openedDate.plusMonths(deposit.getTerm());
-                boolean isTermFinished = !nowDate.isBefore(endDate);
 
-                long daysPassed = Duration.between(lastAccrued, now).toDays();
-                if (daysPassed <= 0) return;
+                LocalDate endOfAccrualDate = now.toLocalDate().isBefore(endDate) ? now.toLocalDate() : endDate;
+                int fullMonthsPassed = Period.between(lastAccrued.toLocalDate(), endOfAccrualDate).getMonths();
 
-                double ratePerDay = deposit.getInterestRate() / 100.0 / 365;
-                double interest = balance * ratePerDay * daysPassed;
+                System.out.println("📅 Кінець нарахування: " + endOfAccrualDate);
+                System.out.println("📊 Пройдено повних місяців з останнього нарахування: " + fullMonthsPassed);
+
+                if (fullMonthsPassed <= 0) {
+                    System.out.println("⚠ Недостатньо часу для нарахування відсотків.");
+                    return;
+                }
+
+                double annualRate = deposit.getInterestRate() / 100.0;
+                double interest = balance * annualRate * fullMonthsPassed / 12;
                 double newBalance = balance + interest;
-                String nowStr = now.format(formatter);
+
+                // Оновлюємо дату останнього нарахування
+                LocalDateTime newLastAccrued = lastAccrued.plusMonths(fullMonthsPassed);
+                String newLastAccruedStr = newLastAccrued.format(formatter);
+
+                System.out.printf("💰 Ставка річна: %.2f%%\n", deposit.getInterestRate());
+                System.out.printf("💸 Нараховано %.2f грн. Новий баланс депозиту: %.2f\n", interest, newBalance);
+
+                boolean isTermFinished = !now.toLocalDate().isBefore(endDate);
+                System.out.println("📌 Чи завершився термін депозиту? " + isTermFinished);
 
                 if (isTermFinished) {
-
                     try (PreparedStatement updateUserBalanceStmt = conn.prepareStatement(updateUserBalanceSql);
                          PreparedStatement deleteDepositStmt = conn.prepareStatement(deleteDepositSql)) {
 
@@ -523,7 +537,6 @@ public class DepositService {
 
                         if (rowsAffected == 0) {
                             conn.rollback();
-                            System.err.println("❌ Не знайдено користувача з ID: " + userId);
                             return;
                         }
 
@@ -532,38 +545,35 @@ public class DepositService {
                         deleteDepositStmt.executeUpdate();
 
                         conn.commit();
-                        logger.info(String.format("Депозит завершено. Нараховано %.2f, загальна сума %.2f повернута на баланс користувача.", interest, newBalance));
-
+                        System.out.printf("✅ Депозит завершено. Нараховано %.2f, загальна сума %.2f повернута на баланс користувача.\n", interest, newBalance);
                     }
 
                     double updatedBalance = UserService.getBalanceByUserId(userId);
                     Session.getUser().setBalance(updatedBalance);
+                    System.out.println("🔄 Баланс користувача оновлено: " + updatedBalance);
 
                 } else {
                     try (PreparedStatement updateDepositStmt = conn.prepareStatement(updateDepositSql)) {
                         updateDepositStmt.setDouble(1, roundToTwoDecimals(newBalance));
-                        updateDepositStmt.setString(2, nowStr);
+                        updateDepositStmt.setString(2, newLastAccruedStr);
                         updateDepositStmt.setInt(3, userId);
                         updateDepositStmt.setInt(4, deposit.getId());
                         updateDepositStmt.executeUpdate();
 
                         conn.commit();
-                        logger.info(String.format("Нараховано %.2f відсотків за %d днів. Новий баланс: %.2f", interest, daysPassed, newBalance));
-
+                        System.out.printf("🕒 Нараховано %.2f грн. за %d міс. Новий баланс депозиту: %.2f\n", interest, fullMonthsPassed, newBalance);
                     }
 
                     double updatedBalance = UserService.getBalanceByUserId(userId);
                     Session.getUser().setBalance(updatedBalance);
+                    System.out.println("🔄 Баланс користувача оновлено: " + updatedBalance);
                 }
             }
 
         } catch (SQLException e) {
-            logger.error("Помилка при нарахуванні відсотків: " + e.getMessage(), e);
             throw new RuntimeException("Помилка нарахування відсотків", e);
         }
     }
-
-
 
 
 
@@ -578,6 +588,24 @@ public class DepositService {
             return rs.next();
         } catch (SQLException e) {
             throw new RuntimeException("Помилка при перевірці депозиту користувача: " + e.getMessage(), e);
+        }
+    }
+
+
+    public boolean updateDeposit(Deposit deposit) throws SQLException {
+        String sql = "UPDATE deposits SET name = ?, type = ?, interest_rate = ?, term = ?, bank_name = ?, " +
+                "is_replenishable = ?, is_early_withdrawal = ?, min_amount = ? WHERE id = ?";
+        try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, deposit.getName());
+            pstmt.setString(2, deposit.getType());
+            pstmt.setDouble(3, deposit.getInterestRate());
+            pstmt.setInt(4, deposit.getTerm());
+            pstmt.setString(5, deposit.getBankName());
+            pstmt.setInt(6, deposit.getIsReplenishable());
+            pstmt.setInt(7, deposit.getIsEarlyWithdrawal());
+            pstmt.setDouble(8, deposit.getMinAmount());
+            pstmt.setInt(9, deposit.getId());
+            return pstmt.executeUpdate() > 0;
         }
     }
 

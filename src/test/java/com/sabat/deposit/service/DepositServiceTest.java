@@ -272,17 +272,18 @@ class DepositServiceTest {
 
     @Test
     void openDepositForUserWithAmount_success() throws SQLException {
-        Deposit depositToOpen = createTestDeposit(1, "TestDeposit", 5.0, 365, 100.0);
+        Deposit depositToOpen = createTestDeposit(1, "TestDeposit", 5.0, 12, 100.0);
         int userId = 1;
         double amount = 200.0;
 
+        // Мок для перевірки чи вже є депозит у користувача
         PreparedStatement mockUserHasDepositPStmt = mock(PreparedStatement.class);
         ResultSet mockUserHasDepositRs = mock(ResultSet.class);
-        when(mockConnection.prepareStatement(startsWith("SELECT 1 FROM user_deposits WHERE user_id = ? AND deposit_id = ?")))
-                .thenReturn(mockUserHasDepositPStmt);
+        when(mockConnection.prepareStatement(startsWith("SELECT 1 FROM user_deposits"))).thenReturn(mockUserHasDepositPStmt);
         when(mockUserHasDepositPStmt.executeQuery()).thenReturn(mockUserHasDepositRs);
-        when(mockUserHasDepositRs.next()).thenReturn(false);
+        when(mockUserHasDepositRs.next()).thenReturn(false); // немає відкритого депозиту
 
+        // Мок для отримання балансу користувача
         PreparedStatement mockGetUserBalancePStmt = mock(PreparedStatement.class);
         ResultSet mockGetUserBalanceRs = mock(ResultSet.class);
         when(mockConnection.prepareStatement(eq("SELECT balance FROM users WHERE id = ?"))).thenReturn(mockGetUserBalancePStmt);
@@ -290,38 +291,43 @@ class DepositServiceTest {
         when(mockGetUserBalanceRs.next()).thenReturn(true);
         when(mockGetUserBalanceRs.getDouble("balance")).thenReturn(500.0);
 
+        // Мок для оновлення балансу користувача
         PreparedStatement mockUpdateUserBalancePStmt = mock(PreparedStatement.class);
         when(mockConnection.prepareStatement(eq("UPDATE users SET balance = ? WHERE id = ?"))).thenReturn(mockUpdateUserBalancePStmt);
         when(mockUpdateUserBalancePStmt.executeUpdate()).thenReturn(1);
 
+        // Мок для вставки нового депозиту
         String insertSql = "INSERT INTO user_deposits (user_id, deposit_id, opened_at, balance, last_interest_accrued, finish_date) " +
-                "VALUES (?, ?, CURRENT_TIMESTAMP, ?, CURRENT_TIMESTAMP, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement mockInsertDepositPStmt = mock(PreparedStatement.class);
         when(mockConnection.prepareStatement(eq(insertSql))).thenReturn(mockInsertDepositPStmt);
         when(mockInsertDepositPStmt.executeUpdate()).thenReturn(1);
 
+        // Виклик
         assertDoesNotThrow(() -> depositService.openDepositForUserWithAmount(userId, depositToOpen, amount));
 
+        // Верифікація
         verify(mockConnection).setAutoCommit(false);
         verify(mockUserHasDepositPStmt).setInt(1, userId);
         verify(mockUserHasDepositPStmt).setInt(2, depositToOpen.getId());
 
         verify(mockGetUserBalancePStmt).setInt(1, userId);
 
-        verify(mockUpdateUserBalancePStmt).setDouble(1, 300.0);
+        verify(mockUpdateUserBalancePStmt).setDouble(1, 300.0); // 500 - 200
         verify(mockUpdateUserBalancePStmt).setInt(2, userId);
 
         verify(mockInsertDepositPStmt).setInt(1, userId);
         verify(mockInsertDepositPStmt).setInt(2, depositToOpen.getId());
-        verify(mockInsertDepositPStmt).setDouble(3, amount);
-        verify(mockInsertDepositPStmt).setString(eq(4), anyString());
+        verify(mockInsertDepositPStmt).setString(eq(3), anyString()); // opened_at
+        verify(mockInsertDepositPStmt).setDouble(4, amount);          // balance
+        verify(mockInsertDepositPStmt).setString(eq(5), anyString()); // last_interest_accrued
+        verify(mockInsertDepositPStmt).setString(eq(6), anyString()); // finish_date
 
         verify(mockInsertDepositPStmt).executeUpdate();
 
         verify(mockConnection).commit();
         verify(mockConnection, never()).rollback();
     }
-
 
 
     @Test
@@ -993,9 +999,26 @@ class DepositServiceTest {
     @Test
     void testAccrueInterest_termFinished() throws Exception {
         int userId = 1;
-        Deposit deposit = createTestDeposit(101, "Test Deposit", 5.0, 1, 1000.0);  // term = 1 місяць
-        LocalDateTime lastAccrued = LocalDateTime.now().minusDays(10);
-        LocalDateTime openedAtDate = LocalDateTime.now().minusMonths(2);
+        double interestRate = 5.0;
+        int termInMonths = 1;
+        double initialBalance = 1000.0;
+
+        Deposit deposit = new Deposit(
+                101,                       // id
+                "Test Deposit",           // name
+                "standard",               // type
+                interestRate,             // interestRate
+                termInMonths,             // term
+                "TestBank",               // bankName
+                0,                        // isReplenishable
+                0,                        // isEarlyWithdrawal
+                500.0                     // minAmount
+        );
+        deposit.setCurrentBalance(initialBalance);
+
+        LocalDateTime lastAccrued = LocalDateTime.now().minusMonths(4);
+        LocalDateTime openedAtDate = LocalDateTime.now().minusMonths(4);
+
 
         // Моки
         Connection mockConn = mock(Connection.class);
@@ -1014,8 +1037,9 @@ class DepositServiceTest {
         when(mockSelectStmt.executeQuery()).thenReturn(mockResultSet);
 
         when(mockResultSet.next()).thenReturn(true);
-        when(mockResultSet.getDouble("balance")).thenReturn(1000.0);
-        when(mockResultSet.getString("last_interest_accrued")).thenReturn(lastAccrued.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        when(mockResultSet.getDouble("balance")).thenReturn(initialBalance);
+        when(mockResultSet.getString("last_interest_accrued"))
+                .thenReturn(lastAccrued.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         when(mockResultSet.getTimestamp("opened_at")).thenReturn(Timestamp.valueOf(openedAtDate));
 
         when(mockUpdateUserBalanceStmt.executeUpdate()).thenReturn(1);
@@ -1030,11 +1054,17 @@ class DepositServiceTest {
 
             User mockUser = mock(User.class);
             sessionMock.when(Session::getUser).thenReturn(mockUser);
-            userServiceMock.when(() -> UserService.getBalanceByUserId(userId)).thenReturn(2000.0);
+
+            double updatedUserBalance = 2000.0;
+            userServiceMock.when(() -> UserService.getBalanceByUserId(userId)).thenReturn(updatedUserBalance);
 
             depositServiceSpy.accrueInterest(userId, deposit);
 
-            verify(mockUpdateUserBalanceStmt).setDouble(eq(1), anyDouble());
+            double expectedInterest = initialBalance * (interestRate / 100.0) * 1 / 12;
+            double expectedNewBalance = initialBalance + expectedInterest;
+            double expectedRoundedBalance = roundToTwoDecimals(expectedNewBalance);
+
+            verify(mockUpdateUserBalanceStmt).setDouble(eq(1), eq(expectedRoundedBalance));
             verify(mockUpdateUserBalanceStmt).setInt(eq(2), eq(userId));
             verify(mockUpdateUserBalanceStmt).executeUpdate();
 
@@ -1044,9 +1074,99 @@ class DepositServiceTest {
 
             verify(mockConn).commit();
 
-            verify(mockUser).setBalance(2000.0);
+            verify(mockUser).setBalance(updatedUserBalance);
         }
     }
+
+    private static double roundToTwoDecimals(double value) {
+        return Math.round(value * 100.0) / 100.0;
+    }
+
+
+
+
+
+    @Test
+    void testAccrueInterest_notTermFinished() throws Exception {
+        int userId = 1;
+
+        // Створюємо депозит із конструктором відповідно до твоєї моделі
+        Deposit deposit = new Deposit(
+                101,
+                "Test Deposit",
+                "TypeA",
+                5.0,       // interestRate 5%
+                6,         // term = 6 місяців (ще не закінчився)
+                "Test Bank",
+                0,         // isReplenishable
+                0,         // isEarlyWithdrawal
+                1000.0     // minAmount
+        );
+
+        // Дати для тесту
+        LocalDateTime lastAccrued = LocalDateTime.now().minusMonths(2);  // останнє нарахування 2 місяці тому
+        LocalDateTime openedAtDate = LocalDateTime.now().minusMonths(4); // відкриття депозиту 4 місяці тому
+
+        // Форматтер для дати у форматі yyyy-MM-dd HH:mm:ss
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // Моки JDBC
+        Connection mockConn = mock(Connection.class);
+        PreparedStatement mockSelectStmt = mock(PreparedStatement.class);
+        PreparedStatement mockUpdateDepositStmt = mock(PreparedStatement.class);
+        ResultSet mockResultSet = mock(ResultSet.class);
+
+        // Створюємо spy на сервісі (якщо потрібно)
+        DepositService depositServiceSpy = Mockito.spy(depositService);
+        when(depositServiceSpy.getConnectionWithForeignKeysEnabled()).thenReturn(mockConn);
+
+        // Мок на підготовку запитів
+        when(mockConn.prepareStatement(startsWith("SELECT balance"))).thenReturn(mockSelectStmt);
+        when(mockConn.prepareStatement(startsWith("UPDATE user_deposits"))).thenReturn(mockUpdateDepositStmt);
+
+        when(mockSelectStmt.executeQuery()).thenReturn(mockResultSet);
+
+        // Налаштування моків для ResultSet
+        when(mockResultSet.next()).thenReturn(true);
+        when(mockResultSet.getDouble("balance")).thenReturn(1000.0);
+        when(mockResultSet.getString("last_interest_accrued")).thenReturn(lastAccrued.format(formatter));
+        when(mockResultSet.getTimestamp("opened_at")).thenReturn(Timestamp.valueOf(openedAtDate));
+
+        when(mockUpdateDepositStmt.executeUpdate()).thenReturn(1);
+
+        // Моки для commit, setAutoCommit, close
+        doNothing().when(mockConn).commit();
+        doNothing().when(mockConn).setAutoCommit(anyBoolean());
+        doNothing().when(mockConn).close();
+
+        // Моки статичних класів UserService і Session
+        try (MockedStatic<UserService> userServiceMock = Mockito.mockStatic(UserService.class);
+             MockedStatic<Session> sessionMock = Mockito.mockStatic(Session.class)) {
+
+            User mockUser = mock(User.class);
+            sessionMock.when(Session::getUser).thenReturn(mockUser);
+
+            // Припустимо, що баланс після нарахування 1004.17
+            userServiceMock.when(() -> UserService.getBalanceByUserId(userId)).thenReturn(1004.17);
+
+            // Викликаємо метод для тестування
+            depositServiceSpy.accrueInterest(userId, deposit);
+
+            // Перевірка, що оновлення депозиту виконується з очікуваними параметрами
+            verify(mockUpdateDepositStmt).setDouble(eq(1), anyDouble());
+            verify(mockUpdateDepositStmt).setString(eq(2), anyString());
+            verify(mockUpdateDepositStmt).setInt(eq(3), eq(userId));
+            verify(mockUpdateDepositStmt).setInt(eq(4), eq(deposit.getId()));
+            verify(mockUpdateDepositStmt).executeUpdate();
+
+            verify(mockConn).commit();
+
+            // Перевірка, що баланс користувача оновлюється у сесії
+            verify(mockUser).setBalance(1004.17);
+        }
+    }
+
+
 
 
 }

@@ -18,9 +18,6 @@ public class NavigationManager {
         scene.setRoot(root);
     }
 
-
-
-
 }
 
 

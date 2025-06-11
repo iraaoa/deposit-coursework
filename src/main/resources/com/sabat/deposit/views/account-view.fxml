@@ -6,31 +6,47 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="1100.0" spacing="20" styleClass="account-root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.AccountController">
+<VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="1100.0" spacing="20" styleClass="account-root" xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.AccountController">
 
    <!-- Вітання з кнопкою Вихід справа -->
    <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 20 40 0 40;">
-      <Label prefHeight="18.0" prefWidth="101.0" styleClass="greeting-label" text="Привіт," />
-      <Label fx:id="nameLabel" graphicTextGap="3.0" prefHeight="18.0" prefWidth="124.0" styleClass="greeting-label" text="" />
+      <Label prefHeight="18.0" prefWidth="104.0" styleClass="greeting-label" text="Привіт," />
+      <Label fx:id="nameLabel" graphicTextGap="3.0" prefHeight="18.0" prefWidth="258.0" styleClass="greeting-label" text="" />
 
       <!-- Spacer, який розтягується і штовхає кнопку вправо -->
       <Region HBox.hgrow="ALWAYS" />
 
-      <Button contentDisplay="CENTER" mnemonicParsing="false" prefHeight="26.0" prefWidth="131.0" text="Вихід" onAction="#onLogoutClick" />
+      <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#onLogoutClick" prefHeight="26.0" prefWidth="97.0" styleClass="logout-button" text="Вихід" />
    </HBox>
 
-   <!-- Зображення картки -->
-   <ImageView fx:id="cardImageView" fitHeight="225.0" fitWidth="381.0">
-      <VBox.margin>
-         <Insets bottom="1.0" />
-      </VBox.margin>
-   </ImageView>
+   <StackPane fx:id="cardPane" maxHeight="225.0" maxWidth="380.0" minHeight="225.0" minWidth="380.0" prefHeight="225.0" prefWidth="380.0" styleClass="card-box">
+
+
+      <HBox spacing="5.0" StackPane.alignment="TOP_LEFT">
+         <ImageView fx:id="logoImage" fitHeight="40.0" fitWidth="40.0" styleClass="w-image" />
+         <Label styleClass="card-logo" text="FUNDLY">
+            <HBox.margin>
+               <Insets top="8.0" />
+            </HBox.margin></Label>
+      </HBox>
+
+      <!-- Номер карти -->
+      <Label fx:id="cardNumberLabel" styleClass="card-number" text="4000 1234 5678 9010" StackPane.alignment="CENTER" />
+
+      <!-- Ім'я користувача -->
+      <Label fx:id="cardNameLabel" styleClass="card-name" StackPane.alignment="BOTTOM_LEFT" />
+
+      <!-- Термін дії -->
+      <Label styleClass="card-expiry" text="12/26" StackPane.alignment="BOTTOM_RIGHT" />
+   </StackPane>
+
+
 
    <!-- Баланс -->
    <HBox alignment="CENTER" prefHeight="30.0" prefWidth="1100.0" spacing="10.0">
-      <Label styleClass="greeting-label" text="Баланс:" />
       <Label fx:id="balanceLabel" styleClass="balance-label" text="0 ₴" />
       <VBox.margin>
          <Insets top="1.0" />

@@ -11,14 +11,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="346.0" prefWidth="404.0" spacing="15.0"
-      xmlns="http://javafx.com/javafx/23.0.1"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.sabat.deposit.controller.RegisterDepositController"
-      stylesheets="@../styles/register-deposit.css">
+<VBox prefHeight="553.0" prefWidth="484.0" spacing="20.0" styleClass="vbox" stylesheets="@../styles/register-deposit.css" xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.RegisterDepositController">
 
 
-    <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Реєстрація депозиту" />
+    <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="454.0" style="-fx-font-size: 18px; -fx-font-weight: bold;" styleClass="title" text="Реєстрація депозиту" />
 
     <TextField fx:id="nameField" promptText="Назва депозиту" />
     <ComboBox fx:id="typeComboBox" promptText="Тип депозиту">
@@ -45,6 +41,6 @@
 
     <Label fx:id="messageLabel" style="-fx-text-fill: red;" />
    <padding>
-      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
 </VBox>

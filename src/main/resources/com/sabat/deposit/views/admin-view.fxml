@@ -9,44 +9,59 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="700.0" maxWidth="1100.0" minHeight="700.0" minWidth="1100.0" spacing="20.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.AdminController">
+<VBox maxHeight="700.0" maxWidth="1100.0" minHeight="700.0" minWidth="1100.0" prefHeight="700.0" prefWidth="1098.0" spacing="20.0" styleClass="a-root" xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.AdminController">
     <children>
-        <Label prefHeight="106.0" prefWidth="464.0" style="-fx-font-size: 40px; -fx-font-weight: bold;" text="Панель Адміністратора" textAlignment="CENTER">
+        <Label alignment="CENTER" styleClass="a-title" contentDisplay="CENTER" prefHeight="106.0" prefWidth="1102.0" style="-fx-font-size: 40px; -fx-font-weight: bold;" text="Administration" textAlignment="CENTER">
             <font>
                 <Font size="53.0" />
             </font>
             <VBox.margin>
-                <Insets left="290.0" />
+                <Insets />
             </VBox.margin>
         </Label>
 
-        <TableView fx:id="depositsTable" prefHeight="358.0" prefWidth="1086.0">
+        <TableView fx:id="depositsTable" prefHeight="440.0" prefWidth="1079.0" styleClass="a-table">
             <columns>
                 <TableColumn fx:id="idColumn" prefWidth="50" text="ID" />
-                <TableColumn fx:id="nameColumn" prefWidth="127.99999618530273" text="Назва" />
-                <TableColumn fx:id="typeColumn" prefWidth="126.40003967285156" text="Тип" />
-                <TableColumn fx:id="interestRateColumn" prefWidth="110.39996337890625" text="Cтавка (%)" />
-                <TableColumn fx:id="termColumn" prefWidth="118.39996337890625" text="Термін (міс)" />
-                <TableColumn fx:id="bankNameColumn" prefWidth="133.5999755859375" text="Банк" />
-                <TableColumn fx:id="isReplenishableColumn" prefWidth="120.0" text="Поповнення" />
-                <TableColumn fx:id="isEarlyWithdrawalColumn" minWidth="0.0" prefWidth="143.199951171875" text="Дострокове зняття" />
-                <TableColumn fx:id="minAmountColumn" prefWidth="187.2000732421875" text="Мінімальна сума" />
+                <TableColumn fx:id="nameColumn" prefWidth="136.80002212524414" text="Назва" />
+                <TableColumn fx:id="typeColumn" prefWidth="118.39997863769531" text="Тип" />
+                <TableColumn fx:id="interestRateColumn" prefWidth="100.800048828125" text="Cтавка (%)" />
+                <TableColumn fx:id="termColumn" prefWidth="119.99996948242188" text="Термін (міс)" />
+                <TableColumn fx:id="bankNameColumn" prefWidth="109.60003662109375" text="Банк" />
+                <TableColumn fx:id="isReplenishableColumn" prefWidth="112.0" text="Поповнення" />
+                <TableColumn fx:id="isEarlyWithdrawalColumn" minWidth="0.0" prefWidth="112.800048828125" text="Зняття" />
+                <TableColumn fx:id="minAmountColumn" minWidth="5.0" prefWidth="160.0" text="Мінімальна сума" />
             </columns>
+         <VBox.margin>
+            <Insets left="10.0" right="10.0" />
+         </VBox.margin>
         </TableView>
-      <HBox prefHeight="34.0" prefWidth="662.0">
+      <HBox alignment="CENTER" prefHeight="34.0" prefWidth="1009.0" spacing="30.0">
          <children>
-              <Button onAction="#onDeleteDepositClick" prefHeight="34.0" prefWidth="247.0" text="Видалити вибраний депозит">
+
+             <Button onAction="#onOpenRegisterDepositClick" prefHeight="34.0" prefWidth="262.0" styleClass="a-button" text="Зареєструвати новий депозит">
                <HBox.margin>
-                  <Insets left="10.0" />
+                  <Insets />
                </HBox.margin>
             </Button>
-      
-              <Button onAction="#onOpenRegisterDepositClick" prefHeight="34.0" prefWidth="262.0" text="Зареєструвати новий депозит">
+              <Button onAction="#onDeleteDepositClick" prefHeight="34.0" prefWidth="247.0" styleClass="a-button" text="Видалити депозит">
                <HBox.margin>
-                  <Insets left="78.0" />
+                  <Insets />
                </HBox.margin>
             </Button>
+
+             <Button onAction="#onEditDepositClick" prefHeight="34.0" prefWidth="220.0" styleClass="a-button" text="Редагувати депозит">
+                 <HBox.margin>
+                     <Insets />
+                 </HBox.margin>
+             </Button>
+
+             <Button contentDisplay="CENTER" mnemonicParsing="false" styleClass="l-button" onAction="#onLogoutClick" prefHeight="26.0" prefWidth="131.0" text="Вихід" />
+
          </children>
+         <VBox.margin>
+            <Insets top="25.0" />
+         </VBox.margin>
       </HBox>
 
 

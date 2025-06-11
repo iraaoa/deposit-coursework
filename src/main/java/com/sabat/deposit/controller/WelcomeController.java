@@ -20,7 +20,7 @@ public class WelcomeController {
 
     @FXML
     public void initialize() {
-        logoImage.setImage(new Image(getClass().getResource("/com/sabat/deposit/images/logo.png").toExternalForm()));
+        logoImage.setImage(new Image(getClass().getResource("/com/sabat/deposit/images/reg.png").toExternalForm()));
     }
 
 

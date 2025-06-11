@@ -1,0 +1,78 @@
+
+.a-root {
+    -fx-background-color: linear-gradient(to bottom, #0f172a, #1e3a8a);
+    -fx-padding: 20;
+}
+
+.a-table {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: #1e293b;
+    -fx-table-cell-border-color: #334155;
+    -fx-padding: 5;
+    -fx-text-fill: white;
+    -fx-border-color: #475569;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+
+
+/* Вміст заголовків таблиці */
+.a-table .column-header .label {
+    -fx-text-fill: #93c5fd;           /* Світло-блакитний текст */
+    -fx-font-weight: bold;            /* Жирний шрифт */
+    -fx-font-size: 13px;
+    -fx-padding: 6 10 6 10;
+}
+
+
+
+/* Заголовки колонок */
+.a-table .column-header-background {
+    -fx-background-color: linear-gradient(to bottom, #0f172a, #1e3a8a);
+}
+
+.a-table .column-header {
+    -fx-background-color: transparent; /* прозорий фон, щоб не перекривав background */
+}
+
+.a-table .table-column {
+    -fx-text-fill: white; /* колір тексту в заголовках */
+    -fx-font-weight: bold;
+}
+
+/* Рядки */
+.a-table .table-row-cell {
+    -fx-background-color: #1e293b;
+    -fx-border-color: #334155;
+    -fx-text-fill: white;
+}
+
+.a-table .table-row-cell:filled:selected,
+.a-table .table-row-cell:filled:selected:hover {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+}
+
+/* Комірки */
+.a-table .table-cell {
+    -fx-text-fill: white;
+    -fx-padding: 8;
+}
+
+.h-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #64748b;
+    -fx-text-fill: #cbd5e1;
+    -fx-font-weight: bold;
+    -fx-padding: 8 18;
+    -fx-cursor: hand;
+}
+
+.h-button:hover {
+    -fx-background-color: #1e293b;
+}
+
+.h-button:pressed {
+    -fx-background-color: #0f172a;
+}

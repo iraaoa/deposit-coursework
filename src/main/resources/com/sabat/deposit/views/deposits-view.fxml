@@ -11,9 +11,9 @@
 
 <!-- Потрібен для fx:factory -->
 
-<AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.DepositsController">
+<AnchorPane prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.DepositsController">
     <!-- Кнопка назад -->
-    <Button fx:id="backButton" layoutX="29.0" layoutY="601.0" onAction="#OnDepoBackClick" prefHeight="38.0" prefWidth="94.0" text="Назад" />
+    <Button fx:id="backButton" layoutX="29.0" layoutY="628.0" onAction="#OnDepoBackClick" prefHeight="38.0" prefWidth="94.0" styleClass="primary-button" text="Назад" />
 
     <!-- Поле пошуку -->
     <TextField fx:id="searchField" layoutX="29.0" layoutY="25.0" prefHeight="37.0" prefWidth="231.0" promptText="Пошук за банком/назвою..." />
@@ -32,11 +32,11 @@
         </items>
     </ComboBox>
 
-    <!-- Контейнер для блоків депозитів -->
-    <ScrollPane fx:id="depositScrollPane" fitToWidth="true" hbarPolicy="NEVER" layoutX="29.0" layoutY="80.0" prefHeight="451.0" prefWidth="942.0">
+    <ScrollPane fx:id="depositScrollPane" fitToWidth="true" hbarPolicy="NEVER" layoutX="29.0" layoutY="84.0" prefHeight="528.0" prefWidth="1070.0" styleClass="deposit-root" vbarPolicy="AS_NEEDED" AnchorPane.bottomAnchor="88.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="84.0">
         <content>
-            <FlowPane fx:id="depositFlowPane" hgap="15" prefHeight="0.0" prefWidth="941.0" style="-fx-padding: 10;" vgap="15" />
+            <FlowPane fx:id="depositFlowPane" hgap="15.0" prefWrapLength="750.0" style="-fx-padding: 10;" styleClass="deposit-container" vgap="15.0" />
         </content>
     </ScrollPane>
+
 
 </AnchorPane>

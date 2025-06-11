@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
@@ -8,40 +9,72 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="700.0" prefWidth="1100.0" styleClass="auth-root-pane" xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.LoginController">
     <children>
-        <!-- Form Container on the LEFT -->
-        <AnchorPane prefHeight="584.0" prefWidth="460.0" styleClass="form-container" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="58.0">
+
+        <!-- Welcome Text Block on the RIGHT -->
+        <VBox layoutX="610.0" layoutY="149.0" prefHeight="217.0" prefWidth="434.0" spacing="10.0" styleClass="welcome-block">
             <children>
-                <VBox fx:id="formVBox" alignment="CENTER" styleClass="form-vbox" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="20.0">
+                <Label styleClass="welcome-title" text="Welcome back!" />
+                <Label styleClass="welcome-subtitle" text="Smart banking. Secure future." />
+
+                <!-- Тези про додаток -->
+                <Label styleClass="welcome-feature" text="• Access your account quickly and securely" wrapText="true">
+                    <VBox.margin>
+                        <Insets top="20.0" />
+                    </VBox.margin>
+                </Label>
+                <Label styleClass="welcome-feature" text="• Monitor your balances and transactions in real time" wrapText="true" />
+                <Label styleClass="welcome-feature" text="• Trusted encryption to keep your data safe" wrapText="true" />
+            </children>
+        </VBox>
+
+        <HBox layoutX="610.0" layoutY="422.0" prefHeight="114.0" prefWidth="434.0">
+            <children>
+                <!-- Logo -->
+                <ImageView fx:id="logoImage" fitHeight="113.0" fitWidth="120.0" preserveRatio="true" styleClass="logo-image" />
+                <Label alignment="TOP_LEFT" contentDisplay="CENTER" prefHeight="22.0" prefWidth="174.0" styleClass="app-name" text="FUNDLY" textAlignment="CENTER">
+                    <HBox.margin>
+                        <Insets left="15.0" top="30.0" />
+                    </HBox.margin>
+                </Label>
+            </children>
+        </HBox>
+
+        <!-- Form Container on the LEFT -->
+        <AnchorPane layoutX="73.0" layoutY="40.8" prefHeight="601.0" prefWidth="475.0" styleClass="form-container" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="41.0">
+            <children>
+                <VBox fx:id="formVBox" alignment="CENTER" layoutX="31.2" prefHeight="482.0" prefWidth="364.0" styleClass="form-vbox" AnchorPane.bottomAnchor="81.0" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="31.0" AnchorPane.topAnchor="20.0">
                     <children>
-                        <Label styleClass="form-title" text="Sign in" />
+                        <Label styleClass="form-title" text="Sign in">
+                            <VBox.margin>
+                                <Insets bottom="55.0" />
+                            </VBox.margin>
+                            <font>
+                                <Font size="16.0" />
+                            </font>
+                        </Label>
 
-                        <Label styleClass="form-label-fullwidth" text="Електронна пошта" />
-                        <TextField fx:id="emailField" promptText="example@email.com" styleClass="form-text-field-fullwidth" />
-
-                        <Label styleClass="form-label-fullwidth" text="Пароль" />
-                        <PasswordField fx:id="passwordField" promptText="Введіть ваш пароль" styleClass="form-text-field-fullwidth" />
-
-                        <Button fx:id="loginButton" onAction="#onLoginClick" styleClass="form-button-primary" text="Увійти" />
+                        <TextField fx:id="emailField" promptText="Email" styleClass="form-text-field-fullwidth" />
+                        <PasswordField fx:id="passwordField" promptText="Password" styleClass="form-text-field-fullwidth" />
+                        <Button fx:id="loginButton" onAction="#onLoginClick" styleClass="form-button-primary" text="Sign in" />
 
                         <HBox alignment="CENTER" styleClass="login-prompt-hbox">
                             <children>
-                                <Label styleClass="login-prompt-label" text="Немає акаунту?" />
-                                <Button fx:id="registerLinkButton" onAction="#onRegisterClick" styleClass="form-button-link" text="Зареєструватися" />
+                                <Label styleClass="login-prompt-label" text="Don't have an account yet?" />
+                                <Button fx:id="registerLinkButton" onAction="#onRegisterClick" styleClass="form-button-link" text="Sign up" />
                             </children>
+                            <VBox.margin>
+                                <Insets top="10.0" />
+                            </VBox.margin>
                         </HBox>
                     </children>
                 </VBox>
+
+                <Label fx:id="errorLabel" alignment="CENTER" layoutX="97.0" layoutY="493.0" managed="${errorLabel.visible}" prefHeight="35.0" prefWidth="281.0" styleClass="error-label" text="Текст помилки тут" visible="false" wrapText="true" />
             </children>
         </AnchorPane>
-
-        <!-- Logo Image on the RIGHT -->
-        <ImageView fx:id="logoImage" fitHeight="337.0" fitWidth="380.0" layoutX="660.0" layoutY="182.0" preserveRatio="true" styleClass="logo-image">
-        </ImageView>
-
-        <Label fx:id="errorLabel" alignment="CENTER" layoutX="696.0" layoutY="547.0" managed="${errorLabel.visible}" prefHeight="38.0" prefWidth="305.0" styleClass="error-label" text="Текст помилки тут" visible="false" wrapText="true" />
-
     </children>
 </AnchorPane>

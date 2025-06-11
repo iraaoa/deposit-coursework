@@ -8,22 +8,29 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionService {
 
     public void addTransaction(int userId, String type, String description, double amount) {
+
+        LocalDateTime date = LocalDateTime.now();
+        String formatteddate = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
         String insertSQL = "INSERT INTO transactions (user_id, transaction_date, type, description, amount) " +
-                "VALUES (?, CURRENT_TIMESTAMP, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
 
             pstmt.setInt(1, userId);
-            pstmt.setString(2, type);
-            pstmt.setString(3, description);
-            pstmt.setDouble(4, amount);
+            pstmt.setString(2, formatteddate);
+            pstmt.setString(3, type);
+            pstmt.setString(4, description);
+            pstmt.setDouble(5, amount);
             pstmt.executeUpdate();
 
         } catch (SQLException e) {

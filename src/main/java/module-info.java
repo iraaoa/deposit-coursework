@@ -7,6 +7,8 @@ module com.sabat.deposit {
     requires jbcrypt;
     requires reload4j;
 
+    requires java.mail;
+
     opens com.sabat.deposit.controller to javafx.fxml;
     exports com.sabat.deposit.controller;
     exports com.sabat.deposit;

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_LEFT" prefHeight="654.0" prefWidth="492.0" spacing="10.0" styleClass="vbox" stylesheets="@../styles/register-deposit.css" xmlns="http://javafx.com/javafx/22.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sabat.deposit.controller.EditDepositController">
+
+    <children>
+        <!-- Заголовок з відповідним стилем -->
+        <Label alignment="TOP_CENTER" prefHeight="35.0" prefWidth="464.0" styleClass="title" text="Редагування депозиту" />
+
+        <Label text="Назва депозиту:" />
+        <TextField fx:id="nameField" promptText="Назва" styleClass="text-field" />
+
+        <Label text="Тип депозиту:" />
+        <ComboBox fx:id="typeComboBox" promptText="Тип" styleClass="combo-box" />
+
+        <Label text="Ставка (%):" />
+        <TextField fx:id="interestRateField" promptText="Ставка (%)" styleClass="text-field" />
+
+        <Label text="Термін (в місяцях):" />
+        <TextField fx:id="termField" promptText="Термін (міс)" styleClass="text-field" />
+
+        <Label text="Назва банку:" />
+        <TextField fx:id="bankNameField" promptText="Назва банку" styleClass="text-field" />
+
+        <!-- Спеціальні стилі за fx:id -->
+        <CheckBox fx:id="replenishableCheckBox" text="Можна поповнювати" />
+        <CheckBox fx:id="earlyWithdrawalCheckBox" text="Дострокове зняття дозволено" />
+
+        <Label text="Мінімальна сума вкладу:" />
+        <TextField fx:id="minAmountField" promptText="Мінімальна сума" styleClass="text-field" />
+
+        <!-- Кнопка в обгортці HBox для стилю .hbox -->
+        <HBox styleClass="hbox">
+            <Button onAction="#onSaveClick" styleClass="button" text="Зберегти" />
+        </HBox>
+    </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</VBox>
