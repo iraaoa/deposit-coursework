@@ -54,10 +54,22 @@ SQLite JDBC Driver
 
 ## 📸 Скріншоти
 
-- 🧾 Головна панель користувача
+- 🧾 Вітальне вікно
+  
 ![image](https://github.com/user-attachments/assets/3af0b724-6fbf-42ba-be61-ee8fb206e2fd)
 
+- 🧾 Реєстрація/вхід
+
+![image](https://github.com/user-attachments/assets/72f62ec8-1d26-483d-b9a9-ff436dea6f56)
+![image](https://github.com/user-attachments/assets/042250f6-62dd-44fb-9044-88a3293479be)
+
+- 🧾 Головна панель користувача
+  
+![image](https://github.com/user-attachments/assets/9032df8f-c783-4e4a-9b45-aa3e24128711)
+
 - 💼 Перегляд доступних депозитів
+
+
 - ⚙️ Адміністративна панель
 
 
