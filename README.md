@@ -69,8 +69,11 @@ SQLite JDBC Driver
 
 - 💼 Перегляд доступних депозитів
 
+![image](https://github.com/user-attachments/assets/2dee45cc-e801-4f27-9b7f-8fd49aba0024)
 
 - ⚙️ Адміністративна панель
+
+![image](https://github.com/user-attachments/assets/98b6ef16-a098-4d7c-8f61-681b7478608b)
 
 
 ## 👤 Автор
